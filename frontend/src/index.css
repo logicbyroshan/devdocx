@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg-dark text-paragraph-color font-sans;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-title-color font-semibold tracking-tight;
+  }
+}
+
+/* Custom Gradients & Utilities */
+.text-gradient {
+  background-image: linear-gradient(to right, #22d3ee, #14b8a6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-purple {
+  background-image: linear-gradient(to right, #a855f7, #6366f1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Component Utilities */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 font-medium px-4 py-2 rounded-lg bg-gradient-to-r from-accent-start to-accent-end text-slate-950 hover:brightness-110 active:scale-[0.98] transition-all shadow-md shadow-cyan-500/10 focus:outline-none focus:ring-2 focus:ring-accent-start/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-2 font-medium px-4 py-2 rounded-lg border border-border-color bg-card-bg/60 text-title-color hover:bg-slate-700/60 hover:border-slate-500 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-accent-start/50 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 font-medium px-4 py-2 rounded-lg bg-slate-800 border border-border-color text-paragraph-color hover:bg-slate-700 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-2 font-medium px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 hover:bg-red-500/30 active:scale-[0.98] transition-all disabled:opacity-50;
+}
+
+.card-panel {
+  @apply bg-card-bg border border-border-color rounded-xl p-5 shadow-sm transition-all duration-200;
+}
+
+.card-interactive {
+  @apply bg-card-bg border border-border-color rounded-xl p-5 shadow-sm hover:border-accent-start/60 hover:shadow-lg hover:shadow-cyan-500/5 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Prism syntax highlighting */
+pre[class*="language-"] {
+  @apply font-mono text-sm bg-slate-950 border border-slate-800 rounded-lg p-4 overflow-x-auto;
+}
+
+code[class*="language-"] {
+  @apply font-mono text-sm;
+}
+
+.token.comment, .token.prolog, .token.doctype, .token.cdata {
+  color: #64748b;
+}
+
+.token.punctuation {
+  color: #94a3b8;
+}
+
+.token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol {
+  color: #22d3ee;
+}
+
+.token.selector, .token.attr-name, .token.string, .token.char, .token.builtin {
+  color: #34d399;
+}
+
+.token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
+  color: #f472b6;
+}
+
+.token.atrule, .token.attr-value, .token.keyword {
+  color: #818cf8;
+}
+
+.token.function, .token.class-name {
+  color: #38bdf8;
+}
+
+.token.regex, .token.important, .token.variable {
+  color: #fbbf24;
+}
