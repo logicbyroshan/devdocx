@@ -12,8 +12,9 @@ urlpatterns = [
 
     # RESTful API Endpoints
     path('api/auth/', include('accounts.api.urls', namespace='accounts_api')),
-    path('api/blog/', include('blog_app.api.urls', namespace='blog_api')),
-    path('api/admin/', include('admin_app.api.urls', namespace='admin_api')),
+    path('api/blog/', include('articles.api.urls', namespace='blog_api')),
+    path('api/admin/', include('dashboard.api.urls', namespace='admin_api')),
+
 ]
 
 if settings.DEBUG:

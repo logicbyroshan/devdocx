@@ -2,7 +2,8 @@
 
 from rest_framework import serializers
 from django.db.models import Count
-from blog_app.models import Post, Tag, Comment, NewsletterSubscriber
+from articles.models import Post, Tag, Comment, NewsletterSubscriber
+
 
 
 class TagSerializer(serializers.ModelSerializer):

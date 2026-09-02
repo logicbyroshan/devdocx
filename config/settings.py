@@ -29,8 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'admin_app',
-    'blog_app',
+    'articles',
+    'dashboard',
     'accounts',
 ]
 
@@ -96,7 +96,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'blog_app.context_processors.user_context',
             ],
         },
     },
@@ -130,9 +129,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Authentication URLs
-LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'blog_app:home'
-LOGOUT_REDIRECT_URL = 'blog_app:home'
+LOGIN_URL = '/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'

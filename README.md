@@ -49,7 +49,7 @@
 ```mermaid
 graph TD
     Client[Web Browser Client] -->|SPA Routing / Assets| ReactApp[React.js Frontend\nVite + Tailwind CSS]
-    ReactApp -->|REST API Requests + CSRF| DjangoAPI[Django REST API Layer\naccounts, blog_app, admin_app]
+    ReactApp -->|REST API Requests + CSRF| DjangoAPI[Django REST API Layer\naccounts, articles, dashboard]
     DjangoAPI -->|ORM Queries| DB[(SQLite / PostgreSQL DB)]
     DjangoAPI -->|Email Dispatch| SMTP[Email Service / Console]
 ```
@@ -193,11 +193,11 @@ npm run build
 │   ├── api/                    # DRF serializers, views, and routes for auth
 │   ├── models.py               # Custom user helpers
 │   └── tests.py                # Auth automated unit test suite
-├── blog_app/                   # Public blog, documentation blueprints, tags, comments
+├── articles/                   # Public technical articles, documentation blueprints, tags, comments
 │   ├── api/                    # DRF serializers, views, and routes for content & docs
 │   ├── models.py               # Post, Tag, Comment, NewsletterSubscriber models
 │   └── tests.py                # Public content automated unit test suite
-├── admin_app/                  # Staff editorial control center, calendar & moderation
+├── dashboard/                  # Staff editorial control center, calendar & moderation
 │   ├── api/                    # DRF serializers, views, and routes for admin panel
 │   └── tests.py                # Admin control automated unit test suite
 ├── config/                     # Django project settings, CORS & root URL routing

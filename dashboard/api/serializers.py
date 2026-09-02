@@ -2,8 +2,9 @@
 
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from blog_app.models import Post, Tag, Comment, NewsletterSubscriber
-from blog_app.api.serializers import TagSerializer
+from articles.models import Post, Tag, Comment, NewsletterSubscriber
+from articles.api.serializers import TagSerializer
+
 
 
 class AdminPostListSerializer(serializers.ModelSerializer):

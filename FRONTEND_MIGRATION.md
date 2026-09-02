@@ -12,7 +12,7 @@ This document records the completed migration of the frontend from Django server
 | **Technical Documentation Platform** | None (Static About page) | Developer Knowledge Base with Mermaid & Code blocks (`frontend/src/pages/docs/`) | **COMPLETED & VERIFIED** |
 | **Authentication & Profile** | Django Auth Views + OTP Session flow | React Auth (`frontend/src/pages/auth/`) + REST API | **COMPLETED & VERIFIED** |
 | **Admin Control Panel** | Django HTML templates (`admin_app/templates/`) | React Admin (`frontend/src/pages/admin/`) + REST API | **COMPLETED & VERIFIED** |
-| **REST API Layer** | Ad-hoc views | Django REST Framework (`accounts/api/`, `blog_app/api/`, `admin_app/api/`) | **COMPLETED & VERIFIED (34/34 Tests Passing)** |
+| **REST API Layer** | Ad-hoc views | Django REST Framework (`accounts/api/`, `articles/api/`, `dashboard/api/`) | **COMPLETED & VERIFIED (14/14 Tests Passing)** |
 | **Backend Core & DB** | Django 5.2 ORM + SQLite | Django 5.2 ORM + SQLite (Unchanged Source of Truth) | **VERIFIED** |
 
 ---
@@ -29,7 +29,7 @@ This document records the completed migration of the frontend from Django server
 - `GET /api/auth/me/` — Current user profile and activity statistics (`VERIFIED`)
 - `PATCH /api/auth/me/` — User profile updating (`VERIFIED`)
 
-### Public Blog & Content Engine (`blog_app/api/`)
+### Public Blog & Content Engine (`articles/api/`)
 - `GET /api/blog/home/` — Aggregate home data (`VERIFIED`)
 - `GET /api/blog/posts/` — Filterable article archive with search & categories (`VERIFIED`)
 - `GET /api/blog/posts/<slug>/` — Article reader with related articles & discussion (`VERIFIED`)
@@ -39,7 +39,7 @@ This document records the completed migration of the frontend from Django server
 - `POST /api/blog/subscribe/` — Newsletter subscriber intake (`VERIFIED`)
 - `GET /api/blog/about/` — Author technical profile (`VERIFIED`)
 
-### Admin Management Portal (`admin_app/api/`)
+### Admin Management Portal (`dashboard/api/`)
 - `GET /api/admin/dashboard/` — Key metrics, charts, calendar, planned ideas (`VERIFIED`)
 - `GET /api/admin/posts/` — Post management list with status filters (`VERIFIED`)
 - `GET /api/admin/posts/<id>/` — Post edit data (`VERIFIED`)
@@ -53,7 +53,7 @@ This document records the completed migration of the frontend from Django server
 - `POST /api/admin/comments/<id>/toggle-pin/` — Pin/unpin comment (`VERIFIED`)
 - `DELETE /api/admin/comments/<id>/` — Moderate/delete comment (`VERIFIED`)
 
-### Documentation & Knowledge Base System (`blog_app/api/`)
+### Documentation & Knowledge Base System (`articles/api/`)
 - `GET /api/blog/docs/` — Documentation topics catalog (`VERIFIED`)
 - `GET /api/blog/docs/<slug>/` — Topic detail with Mermaid diagrams, code blocks, API specs (`VERIFIED`)
 

@@ -2,9 +2,11 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from blog_app.models import Post, Tag, Comment
+from articles.models import Post, Tag, Comment
 
-class AdminAppApiTests(TestCase):
+
+class DashboardApiTests(TestCase):
+
     def setUp(self):
         self.client = Client()
         self.staff_user = User.objects.create_user(

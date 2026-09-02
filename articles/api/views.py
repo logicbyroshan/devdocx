@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
-from blog_app.models import Post, Tag, Comment, NewsletterSubscriber
+from articles.models import Post, Tag, Comment, NewsletterSubscriber
+
 from .serializers import (
     TagSerializer,
     CommentSerializer,

@@ -17,7 +17,7 @@ DEVDOCS/
 │   ├── models.py               # Custom User model hooks
 │   └── tests.py                # Unit test suite for Auth & Session management
 │
-├── blog_app/                   # Django Application: Public Content & Documentation Engine
+├── articles/                   # Django Application: Public Content & Documentation Engine
 │   ├── api/                    # DRF Serializers, Views, and URL routing for Content & Docs
 │   │   ├── serializers.py      # Serializers for Posts, Comments, Tags, Subscribers
 │   │   ├── views.py            # APIViews for Home, Posts, Appreciate, Comments, Docs
@@ -25,12 +25,13 @@ DEVDOCS/
 │   ├── models.py               # Post, Tag, Comment, NewsletterSubscriber
 │   └── tests.py                # Unit test suite for public content
 │
-├── admin_app/                  # Django Application: Staff Editorial Control Center
+├── dashboard/                  # Django Application: Staff Editorial Control Center
 │   ├── api/                    # DRF Serializers, Views, and URL routing for Admin
 │   │   ├── serializers.py      # Serializers for Admin Posts, Comments, Activity
 │   │   ├── views.py            # APIViews for Dashboard, Post CRUD, Calendar, Moderation
 │   │   └── urls.py             # Registered under /api/admin/
 │   └── tests.py                # Unit test suite for Staff permissions and admin workflows
+
 │
 ├── config/                     # Django Project Configuration Root
 │   ├── settings.py             # DRF, CORS, Auth, Static/Media, Database configuration

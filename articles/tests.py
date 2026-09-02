@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Post, Tag, Comment, NewsletterSubscriber
 
-class BlogAppApiTests(TestCase):
+class ArticlesApiTests(TestCase):
+
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
