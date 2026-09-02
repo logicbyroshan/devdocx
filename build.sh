@@ -2,13 +2,21 @@
 # exit on error
 set -o errexit
 
-# Install project dependencies
+# Install project Python dependencies
 pip install -r requirements.txt
+
+# Build React Frontend
+if [ -d "frontend" ]; then
+    echo "Building React Frontend..."
+    cd frontend
+    npm install
+    npm run build
+    cd ..
+fi
 
 # Run Django's deployment commands
 python manage.py collectstatic --no-input
 python manage.py migrate
 
-# --- ADD THIS LINE ---
-# Run our custom command to create the superuser
-python manage.py createsu
+# Create the superuser if not exists
+python manage.py createsu
