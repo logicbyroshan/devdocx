@@ -75,6 +75,11 @@ env/
 .env
 .venv
 
+# Node
+node_modules/
+frontend/node_modules/
+
+
 # Secrets
 *.env
 .env.*

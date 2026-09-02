@@ -21,18 +21,23 @@ class CustomUserCreationForm(UserCreationForm):
         Add custom Tailwind CSS classes to the form fields.
         """
         super().__init__(*args, **kwargs)
-        # The class for all form inputs
         input_class = 'form-input w-full p-3 rounded-md focus:outline-none focus:border-cyan-400'
         
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = input_class
-            # Add specific placeholders if needed
             if field_name == 'username':
-                field.widget.attrs['placeholder'] = 'e.g., roshandamor'
+                field.widget.attrs['placeholder'] = 'e.g., dev_engineer'
+
             if field_name == 'email':
                 field.widget.attrs['placeholder'] = 'you@example.com'
 
-# --- ADD THIS NEW FORM CLASS ---
+    def clean_email(self):
+        """Validate that email is unique in the system."""
+        email = self.cleaned_data.get('email', '').strip().lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('An account with this email address already exists.')
+        return email
+
 class EditProfileForm(forms.ModelForm):
     """
     A form for users to edit their own profile information.
@@ -49,3 +54,13 @@ class EditProfileForm(forms.ModelForm):
         input_class = 'w-full bg-slate-900/70 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-cyan-400'
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': input_class})
+
+    def clean_email(self):
+        """Validate that updated email does not conflict with existing accounts."""
+        email = self.cleaned_data.get('email', '').strip().lower()
+        existing = User.objects.filter(email__iexact=email)
+        if self.instance and self.instance.pk:
+            existing = existing.exclude(pk=self.instance.pk)
+        if existing.exists():
+            raise forms.ValidationError('An account with this email address already exists.')
+        return email

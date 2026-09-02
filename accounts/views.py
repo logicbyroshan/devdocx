@@ -7,123 +7,138 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.conf import settings
 from django.utils import timezone
 from django.contrib import messages
 from .forms import CustomUserCreationForm, EditProfileForm
-# ... (all imports remain the same) ...
-from blog_app.models import Post, Comment # <-- Import Post and Comment for counting
-# It's good practice to get the logger for the current file
+from blog_app.models import Post, Comment
+
 logger = logging.getLogger(__name__)
+
+MAX_OTP_ATTEMPTS = 5
 
 
 def send_otp_email(request, user, otp):
-    """A simple helper function to send the OTP email."""
-    subject = "Your Verification Code for Roshan's Writings"
-    message = f"Welcome to Roshan's Writings! Your verification code is {otp}."
+    """Helper function to send a styled HTML OTP email with plain text fallback."""
+    subject = "Your Verification Code for DevDocs"
+    context = {
+        'user': user,
+        'otp': otp,
+        'subject': subject,
+        'introductory_text': "Welcome to DevDocs! Please use the following code to verify your account:",
+    }
     
-    # This is the function that actually connects to your mail server
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-        fail_silently=False, # Set to False to see errors in the console
-    )
+    html_content = render_to_string('accounts/otp_email.html', context)
+    text_content = f"Hello {user.username},\n\nWelcome to DevDocs! Your verification code is: {otp}\n\nThis code expires in 10 minutes."
+    
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@devdocs.io')
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [user.email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send(fail_silently=False)
+
 
 
 def signup_view(request):
     """
-    Handles user registration with detailed step-by-step terminal messages for debugging.
+    Handles user registration and initiates email OTP verification.
     """
-    # Use a clear separator in the terminal for each request
-    print("\n" + "="*50)
-    print("--- Starting Signup Process ---")
+    if request.user.is_authenticated:
+        return redirect('blog_app:home')
 
     if request.method == 'POST':
-        print("Step 1: Received a POST request.")
         form = CustomUserCreationForm(request.POST)
 
         if form.is_valid():
-            print("Step 2: Form data is valid. Proceeding to create user.")
-            
-            # Save the user but keep them inactive until they verify their email
             user = form.save(commit=False)
             user.is_active = False
             user.save()
-            print(f"Step 3: Inactive user '{user.username}' created successfully in the database.")
 
-            # Generate and store OTP in the user's session
+            # Generate and store OTP in user session
             otp = random.randint(100000, 999999)
-            request.session['otp_code'] = otp
+            request.session['otp_code'] = str(otp)
             request.session['verification_user_id'] = user.id
+            request.session['otp_attempts'] = 0
             request.session['otp_expiry'] = (timezone.now() + timedelta(minutes=10)).isoformat()
             request.session['resend_cooldown_expiry'] = (timezone.now() + timedelta(seconds=60)).isoformat()
-            request.session.save() # Explicitly save the session before the next step
-            print(f"Step 4: OTP '{otp}' generated and saved to session for user ID {user.id}.")
+            request.session.save()
 
             try:
-                print("Step 5: Attempting to call the send_otp_email function...")
                 send_otp_email(request, user, otp)
-                print("Step 6: send_otp_email function completed WITHOUT raising an error.")
-                
-                messages.info(request, f'A verification code has been sent to {user.email}. Please check your inbox and spam folder.')
-                print("Step 7: Success message added. Preparing to redirect to the OTP verification page.")
+                messages.info(request, f'A verification code has been sent to {user.email}. Please check your inbox.')
                 return redirect('accounts:otp_verification')
 
             except Exception as e:
-                # This block runs ONLY if send_otp_email fails
-                print(f"---!!! CRITICAL ERROR at Step 5 !!!---")
-                print(f"The send_otp_email function failed. The user was NOT redirected.")
-                print(f"REASON: {e}") # This will print the exact SMTP or connection error
                 logger.error(f"Failed to send OTP email for {user.username}. Error: {e}", exc_info=True)
-                
                 messages.error(request, 'We could not send a verification email. Please try again later.')
-                user.delete() # Important: Clean up the inactive user we created
-                print("Step 5b: Deleted the inactive user due to email sending failure.")
+                user.delete()
                 return redirect('accounts:signup')
-        
         else:
-            # This block runs if the form data itself is invalid
-            print("Step 2b: Form is NOT valid. It will be re-rendered with errors.")
-            print("Form Errors:", form.errors.as_json())
             messages.error(request, 'Please correct the errors shown below.')
-
     else:
-        # This block runs for a GET request (when the user first visits the page)
-        print("Step 1b: Received a GET request. Displaying the empty signup form.")
         form = CustomUserCreationForm()
-    
+
     return render(request, 'accounts/signup.html', {'form': form})
 
 
 def otp_verification_view(request):
     """Verifies the OTP submitted by the user and activates the account."""
-    if 'verification_user_id' not in request.session:
-        messages.error(request, 'Your verification session has expired. Please sign up again.')
+    if request.user.is_authenticated:
+        return redirect('blog_app:home')
+
+    user_id = request.session.get('verification_user_id')
+    otp_code = request.session.get('otp_code')
+    otp_expiry_str = request.session.get('otp_expiry')
+
+    if not user_id or not otp_code:
+        messages.error(request, 'Your verification session has expired or is invalid. Please sign up again.')
         return redirect('accounts:signup')
 
     if request.method == 'POST':
-        submitted_otp = request.POST.get('otp')
-        otp_code = request.session.get('otp_code')
-        user_id = request.session.get('verification_user_id')
+        submitted_otp = request.POST.get('otp', '').strip()
+        attempts = request.session.get('otp_attempts', 0) + 1
+        request.session['otp_attempts'] = attempts
+
+        # Check maximum attempts rate limit
+        if attempts > MAX_OTP_ATTEMPTS:
+            request.session.pop('otp_code', None)
+            request.session.pop('verification_user_id', None)
+            messages.error(request, 'Too many incorrect attempts. Please sign up or request a new code.')
+            return redirect('accounts:signup')
+
+        # Check OTP expiration
+        if otp_expiry_str:
+            expiry_time = timezone.datetime.fromisoformat(otp_expiry_str)
+            if timezone.now() > expiry_time:
+                messages.error(request, 'Your verification code has expired. Please request a new code.')
+                return render(request, 'accounts/otp_verification.html', {'can_resend': True, 'time_left': 0})
 
         if submitted_otp == str(otp_code):
             try:
                 user = User.objects.get(id=user_id)
                 user.is_active = True
                 user.save()
+
+                # Clean up verification keys from session
+                for key in ['otp_code', 'verification_user_id', 'otp_expiry', 'resend_cooldown_expiry', 'otp_attempts']:
+                    request.session.pop(key, None)
+
+                # Authenticate user and keep session active
                 login(request, user)
-                request.session.flush() # Clear the entire session on success
                 messages.success(request, 'Your account has been verified successfully!')
                 return redirect('blog_app:home')
             except User.DoesNotExist:
                 messages.error(request, 'User not found. Please sign up again.')
                 return redirect('accounts:signup')
         else:
-            messages.error(request, 'Invalid OTP. Please try again.')
-    
+            remaining = MAX_OTP_ATTEMPTS - attempts
+            if remaining > 0:
+                messages.error(request, f'Invalid OTP. You have {remaining} attempt(s) remaining.')
+            else:
+                messages.error(request, 'Invalid OTP. No attempts remaining. Please request a new code.')
+
     # Logic for the resend timer
     resend_cooldown_expiry_str = request.session.get('resend_cooldown_expiry')
     can_resend, time_left = True, 0
@@ -131,8 +146,8 @@ def otp_verification_view(request):
         expiry_time = timezone.datetime.fromisoformat(resend_cooldown_expiry_str)
         if timezone.now() < expiry_time:
             can_resend = False
-            time_left = (expiry_time - timezone.now()).seconds
-    
+            time_left = max(0, int((expiry_time - timezone.now()).total_seconds()))
+
     return render(request, 'accounts/otp_verification.html', {'can_resend': can_resend, 'time_left': time_left})
 
 
@@ -143,7 +158,7 @@ def resend_otp_view(request):
 
     if not user_id:
         return redirect('accounts:signup')
-    
+
     if resend_cooldown_expiry_str and timezone.now() < timezone.datetime.fromisoformat(resend_cooldown_expiry_str):
         messages.warning(request, 'Please wait before requesting another code.')
         return redirect('accounts:otp_verification')
@@ -151,21 +166,21 @@ def resend_otp_view(request):
     try:
         user = User.objects.get(id=user_id)
         otp = random.randint(100000, 999999)
-        
-        # Update session with new OTP and reset cooldown
-        request.session['otp_code'] = otp
+
+        # Update session with new OTP and reset cooldown & attempts
+        request.session['otp_code'] = str(otp)
+        request.session['otp_attempts'] = 0
         request.session['otp_expiry'] = (timezone.now() + timedelta(minutes=10)).isoformat()
         request.session['resend_cooldown_expiry'] = (timezone.now() + timedelta(seconds=60)).isoformat()
         request.session.save()
 
         send_otp_email(request, user, otp)
-        messages.success(request, 'A new verification code has been sent.')
+        messages.success(request, 'A new verification code has been sent to your email.')
     except Exception as e:
-        logger.error(f"CRITICAL: Failed to RESEND OTP for user {user.username}. Error: {e}")
+        logger.error(f"Failed to RESEND OTP for user ID {user_id}. Error: {e}", exc_info=True)
         messages.error(request, 'Failed to send a new code. Please try again later.')
 
     return redirect('accounts:otp_verification')
-
 
 
 @login_required
@@ -174,8 +189,7 @@ def profile_view(request):
     Displays the profile of the currently logged-in user with their activity stats.
     """
     user = request.user
-    
-    # Fetch real activity data from the database
+
     comments_written_count = Comment.objects.filter(author=user).count()
     posts_appreciated_count = user.appreciated_posts.count()
     posts_published_count = Post.objects.filter(author=user, status=Post.Status.PUBLISHED).count()
@@ -188,7 +202,7 @@ def profile_view(request):
     }
     return render(request, 'accounts/profile.html', context)
 
-# --- ADD THIS NEW VIEW ---
+
 @login_required
 def edit_profile_view(request):
     """
@@ -202,5 +216,5 @@ def edit_profile_view(request):
             return redirect('accounts:profile')
     else:
         form = EditProfileForm(instance=request.user)
-    
-    return render(request, 'accounts/edit_profile.html', {'form': form})
+
+    return render(request, 'accounts/edit_profile.html', {'form': form})
