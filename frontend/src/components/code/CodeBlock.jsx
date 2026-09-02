@@ -15,9 +15,9 @@ export function CodeBlock({
   code = '',
   language = 'javascript',
   filename,
-  showLineNumbers = false,
   className = '',
 }) {
+
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {

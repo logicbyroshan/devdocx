@@ -21,7 +21,15 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+from django.views.static import serve
+
+# Static assets from compiled React SPA
+urlpatterns += [
+    re_path(r'^assets/(?P<path>.*)$', serve, {'document_root': settings.BASE_DIR / 'frontend' / 'dist' / 'assets'}),
+]
+
 # Single-Page Application Catch-All Route (must be last)
 urlpatterns += [
-    re_path(r'^(?!api/|media/|static/|django-admin/).*$', SPAView.as_view(), name='spa_app'),
+    re_path(r'^(?!api/|media/|static/|assets/|django-admin/).*$', SPAView.as_view(), name='spa_app'),
 ]
+

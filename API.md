@@ -77,9 +77,10 @@ Terminates the user's active session.
 - **Permissions**: `IsAuthenticated`
 
 ### 1.7 `GET /api/auth/me/` & `PATCH /api/auth/me/`
-Retrieves or updates the current user's profile information.
+Retrieves authentication state (`authenticated: true/false`, user details) or updates the current user's profile information.
 
-- **Permissions**: `IsAuthenticated`
+- **Permissions**: `GET`: `AllowAny` (returns `user: null` if anonymous); `PATCH`: `IsAuthenticated`
+
 
 ---
 

@@ -234,15 +234,28 @@ class LogoutAPIView(APIView):
 
 class CurrentUserAPIView(APIView):
     """Returns or updates the current authenticated user profile."""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
+        if request.user.is_authenticated:
+            return Response({
+                'success': True,
+                'authenticated': True,
+                'user': UserSerializer(request.user).data
+            })
         return Response({
             'success': True,
-            'user': UserSerializer(request.user).data
+            'authenticated': False,
+            'user': None
         })
 
     def patch(self, request):
+        if not request.user.is_authenticated:
+            return Response({
+                'success': False,
+                'message': 'Authentication required.'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = EditProfileSerializer(request.user, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             user = serializer.save()
@@ -252,3 +265,4 @@ class CurrentUserAPIView(APIView):
                 'user': UserSerializer(user).data
             })
         return Response({'success': False, 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+

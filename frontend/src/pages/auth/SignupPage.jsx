@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, ArrowRight, ShieldCheck } from 'lucide-react';
+import { UserPlus, ArrowRight } from 'lucide-react';
+
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { Input } from '../../components/ui/Input';

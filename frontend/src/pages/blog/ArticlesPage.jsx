@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Search, Filter, Calendar, Heart, MessageSquare, BookOpen } from 'lucide-react';
+import { Search, Calendar, Heart, MessageSquare, BookOpen } from 'lucide-react';
 import { blogApi } from '../../api/blog';
 import { Badge } from '../../components/ui/Badge';
 import { CardSkeleton } from '../../components/ui/Skeleton';
 import { EmptyState, ErrorState } from '../../components/ui/EmptyState';
 import { Pagination } from '../../components/ui/Pagination';
+
 
 export function ArticlesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -106,9 +107,10 @@ export function ArticlesPage() {
           Article Archive & Knowledge Base
         </h1>
         <p className="text-sm text-slate-400 max-w-2xl leading-relaxed">
-          Explore technical write-ups, architecture breakdowns, developer guides, and coding patterns.
+          {totalCount > 0 ? `Showing ${totalCount} technical articles, architecture breakdowns, and developer guides.` : 'Explore technical write-ups, architecture breakdowns, and developer guides.'}
         </p>
       </div>
+
 
       {/* Filter & Search Bar */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pb-4 border-b border-border-color">

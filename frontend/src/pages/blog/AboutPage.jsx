@@ -7,22 +7,19 @@ import {
   Layers,
   Cpu,
   Github,
-  Twitter,
-  Linkedin,
   Mail,
   MapPin,
-  ExternalLink,
   BookOpen,
   Heart,
   MessageSquare,
 } from 'lucide-react';
+
 import { blogApi } from '../../api/blog';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 
 export function AboutPage() {
   const [author, setAuthor] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadAuthor() {
@@ -33,12 +30,11 @@ export function AboutPage() {
         }
       } catch (err) {
         console.error('Failed to load author data:', err);
-      } finally {
-        setLoading(false);
       }
     }
     loadAuthor();
   }, []);
+
 
   const stack = [
     { title: 'Backend Core', desc: 'Django 5.2, Python 3.11, Django REST Framework, WhiteNoise', icon: Server },

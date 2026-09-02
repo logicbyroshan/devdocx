@@ -1,12 +1,12 @@
 // --- FILE: frontend/src/pages/auth/OtpVerificationPage.jsx ---
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, RotateCcw, ArrowRight, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ShieldCheck, RotateCcw, Mail } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
-import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+
 
 export function OtpVerificationPage() {
   const [otp, setOtp] = useState('');

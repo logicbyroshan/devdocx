@@ -6,7 +6,6 @@ import {
   FileText,
   Calendar as CalendarIcon,
   Clock,
-  Sparkles,
   Lightbulb,
   Plus,
   ArrowRight,
@@ -108,7 +107,7 @@ export function DashboardPage() {
     return <ErrorState title="Dashboard Error" message={error} onRetry={fetchDashboard} />;
   }
 
-  const { metrics, chart_data, calendar: cal, planned_posts = [], popular_posts = [], latest_posts = [], recommended_posts = [], non_recommended_posts = [] } = data;
+  const { metrics, chart_data, calendar: cal, planned_posts = [], popular_posts = [], latest_posts = [], recommended_posts = [] } = data;
 
   const currentTabPosts =
     activeTab === 'popular'

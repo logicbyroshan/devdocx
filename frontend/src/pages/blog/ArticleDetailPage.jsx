@@ -6,7 +6,6 @@ import {
   Heart,
   MessageSquare,
   Calendar,
-  Share2,
   Twitter,
   Linkedin,
   Link2,
@@ -22,7 +21,6 @@ import { useToast } from '../../contexts/ToastContext';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { MarkdownContent } from '../../components/content/MarkdownContent';
-import { CardSkeleton } from '../../components/ui/Skeleton';
 import { ErrorState } from '../../components/ui/EmptyState';
 
 export function ArticleDetailPage() {

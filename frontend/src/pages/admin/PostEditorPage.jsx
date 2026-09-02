@@ -9,7 +9,6 @@ import {
   Eye,
   ArrowLeft,
   Image as ImageIcon,
-  Check,
   Calendar,
 } from 'lucide-react';
 import { adminApi } from '../../api/admin';
@@ -17,7 +16,6 @@ import { useToast } from '../../contexts/ToastContext';
 import { Input, Textarea } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { MarkdownContent } from '../../components/content/MarkdownContent';
-import { Badge } from '../../components/ui/Badge';
 
 export function PostEditorPage() {
   const { id } = useParams();
@@ -39,7 +37,6 @@ export function PostEditorPage() {
   const [scheduleDate, setScheduleDate] = useState('');
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
-  const [currentStatus, setCurrentStatus] = useState('DF');
 
   // Load existing post if editing
   useEffect(() => {

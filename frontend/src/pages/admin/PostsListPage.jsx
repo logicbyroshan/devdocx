@@ -9,10 +9,9 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  Star,
-  Calendar,
   ExternalLink,
 } from 'lucide-react';
+
 import { adminApi } from '../../api/admin';
 import { useToast } from '../../contexts/ToastContext';
 import { DataTable } from '../../components/tables/DataTable';
